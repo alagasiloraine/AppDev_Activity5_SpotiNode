@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Music Player</title>
+    <link rel="stylesheet" href="/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+
+<body>
+
+   <!-- Navigation Bar -->
+    <nav class="navbar">
+        <a class="navbar-brand" href="#">
+            <img src="/image/spotify-logo.png" alt="SpotiNode Logo" class="navbar-logo"> SpotiNode
+        </a>
+        <div class="navbar-menu">
+            <ul class="nav-list">
+                <li class="nav-item">
+                    <a class="nav-link active" href="/">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Artist</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Albums</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Playlist</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Add Song Button -->
+    <div class="text-center mt-4">
+        <button id="addSongBtn" class="btn add-song-btn">
+            <i class="fas fa-plus"></i> Add Song
+        </button>
+    </div>
+
+    <!-- List of songs -->
+    <div class="container mt-4" id="songsList">
+        <% if (tracks.length > 0) { %>
+            <% tracks.forEach((track, index) => { %>
+                <div class="song-item" data-index="<%= index %>">
+                    <div class="song-cover-container">
+                        <img src="<%= track.image_path %>" alt="<%= track.title %>" class="song-cover">
+                        <button class="play-btn" data-index="<%= index %>">
+                            <i class="icon-play"></i>
+                        </button>
+                    </div>
+                    <div class="song-info">
+                        <h5 class="mb-0"><%= track.title %></h5>
+                        <p class="mb-0"><%= track.artist %></p>
+                    </div>
+                    <div class="song-actions">
+                        <button>
+                            <i class="icon-add"></i>
+                        </button>
+                        <button>
+                            <i class="icon-heart"></i>
+                        </button>
+                    </div>
+                    <audio src="<%= track.file_path %>" class="song-file"></audio>
+                </div>
+            <% }) %>
+        <% } else { %>
+            <p>No songs available. Upload a new song!</p>
+        <% } %>
+    </div>
+
+    <!-- Modal Form for adding music -->
+    <div id="songModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Add a New Song</h2>
+            <form id="uploadForm" action="/upload" method="POST" enctype="multipart/form-data">
+                <label for="title">Title:</label>
+                <input type="text" id="title" name="title" required><br><br>
+
+                <label for="artist">Artist:</label>
+                <input type="text" id="artist" name="artist" required><br><br>
+
+                <label for="image_cover">Cover Image:</label>
+                <input type="file" id="image_cover" name="image_cover" accept="image/*" required><br><br>
+
+                <label for="songFile">Music File:</label>
+                <input type="file" id="songFile" name="songFile" accept="audio/*" required><br><br>
+
+                <button type="submit" class="btn">Upload Song</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Bottom Music Player -->
+    <div class="music-player" id="musicPlayer">
+        <img src="" alt="Song Cover" id="currentCover">
+        <div class="song-info">
+            <h5 id="currentTitle">Song Title</h5>
+            <p id="currentArtist">Artist Name</p>
+        </div>
+        <input type="range" id="progressBar" class="progress-bar" value="0" step="0.1">
+        <div class="music-controls">
+            <button id="prevBtn"><i class="icon-prev"></i></button>
+            <button id="playPauseBtn"><i class="icon-play"></i></button>
+            <button id="nextBtn"><i class="icon-next"></i></button>
+        </div>
+    </div>
+
+    <script src="/scripts.js"></script>
+</body>
+
+</html>
