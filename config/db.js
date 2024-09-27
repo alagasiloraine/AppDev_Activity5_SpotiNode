@@ -2,7 +2,7 @@ const mysql = require('mysql2');
 
 const db = mysql.createConnection({
     host: 'localhost',
-    user: 'root',  // Corrected 'user' key
+    user: 'root', 
     password: '',
     database: 'spotinode_db'
 });

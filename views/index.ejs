@@ -10,58 +10,41 @@
 </head>
 
 <body>
-
-   <!-- Navigation Bar -->
     <nav class="navbar">
         <a class="navbar-brand" href="#">
             <img src="/image/spotify-logo.png" alt="SpotiNode Logo" class="navbar-logo"> SpotiNode
         </a>
-        <div class="navbar-menu">
-            <ul class="nav-list">
-                <li class="nav-item">
-                    <a class="nav-link active" href="/">Home</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#">Artist</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#">Albums</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#">Playlist</a>
-                </li>
-            </ul>
-        </div>
     </nav>
 
-    <!-- Add Song Button -->
     <div class="text-center mt-4">
         <button id="addSongBtn" class="btn add-song-btn">
             <i class="fas fa-plus"></i> Add Song
         </button>
     </div>
 
-    <!-- List of songs -->
     <div class="container mt-4" id="songsList">
         <% if (tracks.length > 0) { %>
             <% tracks.forEach((track, index) => { %>
                 <div class="song-item" data-index="<%= index %>">
                     <div class="song-cover-container">
                         <img src="<%= track.image_path %>" alt="<%= track.title %>" class="song-cover">
-                        <button class="play-btn" data-index="<%= index %>">
-                            <i class="icon-play"></i>
-                        </button>
                     </div>
                     <div class="song-info">
-                        <h5 class="mb-0"><%= track.title %></h5>
-                        <p class="mb-0"><%= track.artist %></p>
-                    </div>
+                        <h3 class="song-title"><%= track.title %></h3>
+                        <p class="song-artist"><%= track.artist %></p>
+                        <button class="play-btn" data-index="<%= index %>">
+                            <img src="/image/play.png" alt="Play" class="play-icon">
+                        </button>
+                    </div>                   
                     <div class="song-actions">
                         <button>
-                            <i class="icon-add"></i>
+                            <img src="/image/add.png" alt="Add" class="action-icon add-icon">
                         </button>
-                        <button>
-                            <i class="icon-heart"></i>
+                        <button class="edit-btn" data-index="<%= index %>" data-id="<%= tracks.id %>" data-title="<%= tracks.title %>" data-artist="<%= tracks.artist %>" data-image="<%= tracks.image_path %>" data-file="<%= tracks.file_path %>">
+                            <img src="/image/pen.png" alt="Liked" class="action-icon liked-icon">
+                        </button>
+                        <button class="delete-btn" data-id="<%= track.id %>">
+                            <img src="/image/delete.png" alt="Delete" class="action-icon delete-icon">
                         </button>
                     </div>
                     <audio src="<%= track.file_path %>" class="song-file"></audio>
@@ -72,7 +55,6 @@
         <% } %>
     </div>
 
-    <!-- Modal Form for adding music -->
     <div id="songModal" class="modal">
         <div class="modal-content">
             <span class="close">&times;</span>
@@ -80,34 +62,61 @@
             <form id="uploadForm" action="/upload" method="POST" enctype="multipart/form-data">
                 <label for="title">Title:</label>
                 <input type="text" id="title" name="title" required><br><br>
-
+    
                 <label for="artist">Artist:</label>
                 <input type="text" id="artist" name="artist" required><br><br>
-
+    
                 <label for="image_cover">Cover Image:</label>
                 <input type="file" id="image_cover" name="image_cover" accept="image/*" required><br><br>
-
+    
                 <label for="songFile">Music File:</label>
                 <input type="file" id="songFile" name="songFile" accept="audio/*" required><br><br>
-
+    
                 <button type="submit" class="btn">Upload Song</button>
             </form>
         </div>
     </div>
 
-    <!-- Bottom Music Player -->
+    <div id="editSongModal" class="modal">
+        <div class="modal-content">
+            <span class="close" id="closeEditModal">&times;</span>
+            <h2>Edit Song</h2>
+            <form id="editSongForm" action="/edit/<%= tracks.id %>" method="POST" enctype="multipart/form-data">
+
+                <input type="hidden" id="editSongId" name="id" value="">
+
+                <label for="editTitle">Title:</label>
+                <input type="text" id="editTitle" name="title" required>
+
+                <label for="editArtist">Artist:</label>
+                <input type="text" id="editArtist" name="artist" required>
+
+                <label for="editCoverImage">Cover Image:</label>
+                <input type="file" id="editCoverImage" name="image_path" accept="image/*">
+                <img id="editPreviewImage" src="" alt="Cover Preview" style="max-width: 150px; display: block; margin-top: 10px;">
+
+                <label for="editMusicFile">Music File:</label>
+                <input type="file" id="editMusicFile" name="songFile" accept="audio/*">
+
+                <button type="submit" id="saveEditBtn" class="btn btn-success">Save Changes</button>
+            </form>
+        </div>
+    </div>
+
     <div class="music-player" id="musicPlayer">
         <img src="" alt="Song Cover" id="currentCover">
         <div class="song-info">
-            <h5 id="currentTitle">Song Title</h5>
+            <h3 id="currentTitle">Song Title</h3>
             <p id="currentArtist">Artist Name</p>
         </div>
         <input type="range" id="progressBar" class="progress-bar" value="0" step="0.1">
         <div class="music-controls">
-            <button id="prevBtn"><i class="icon-prev"></i></button>
-            <button id="playPauseBtn"><i class="icon-play"></i></button>
-            <button id="nextBtn"><i class="icon-next"></i></button>
-        </div>
+            <button id="shuffleBtn"><i class="fas fa-random"></i></button>
+            <button id="prevBtn"><i class="fas fa-backward"></i></button>
+            <button id="playPauseBtn"><i class="fas fa-play"></i></button>
+            <button id="nextBtn"><i class="fas fa-forward"></i></button>
+            <button id="repeatBtn"><i class="fas fa-redo"></i></button>
+        </div>               
     </div>
 
     <script src="/scripts.js"></script>

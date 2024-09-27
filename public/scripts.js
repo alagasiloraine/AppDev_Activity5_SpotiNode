@@ -2,77 +2,50 @@ const tracks = document.querySelectorAll('.song-item');
         const audioPlayer = document.createElement('audio');
         let currentTrackIndex = 0;
 
-        // Music Player Elements
         const playPauseBtn = document.getElementById('playPauseBtn');
         const progressBar = document.getElementById('progressBar');
         const currentCover = document.getElementById('currentCover');
         const currentTitle = document.getElementById('currentTitle');
         const currentArtist = document.getElementById('currentArtist');
 
-        // Modal Elements
-        const modal = document.getElementById('songModal');
-        const addSongBtn = document.getElementById('addSongBtn');
-        const closeModal = document.getElementsByClassName('close')[0];
-
-        // Show modal when 'Add Song' button is clicked
-        addSongBtn.onclick = function () {
-            modal.style.display = 'block';
-        }
-
-        // Close modal when 'X' is clicked
-        closeModal.onclick = function () {
-            modal.style.display = 'none';
-        }
-
-        // Close modal if clicked outside the modal content
-        window.onclick = function (event) {
-            if (event.target === modal) {
-                modal.style.display = 'none';
-            }
-        }
-
-        // Function to load and play the selected track
         function loadTrack(index) {
             const songItem = tracks[index];
             const songAudio = songItem.querySelector('.song-file').src;
-            const songTitle = songItem.querySelector('h5').textContent;
+            const songTitle = songItem.querySelector('h3').textContent;
             const songArtist = songItem.querySelector('p').textContent;
             const songCover = songItem.querySelector('.song-cover').src;
 
             audioPlayer.src = songAudio;
+            
             currentCover.src = songCover;
             currentTitle.textContent = songTitle;
             currentArtist.textContent = songArtist;
 
             audioPlayer.play();
-            playPauseBtn.innerHTML = '<i class="bi bi-pause-fill"></i>';
+            playPauseBtn.innerHTML = '<i class="fas fa-pause"></i>';
         }
 
-        // Play/Pause Button functionality
         playPauseBtn.addEventListener('click', function () {
             if (audioPlayer.paused) {
                 audioPlayer.play();
-                playPauseBtn.innerHTML = '<i class="bi bi-pause-fill"></i>';
+                playPauseBtn.innerHTML = '<i class="fas fa-pause"></i>';
             } else {
                 audioPlayer.pause();
-                playPauseBtn.innerHTML = '<i class="bi bi-play-fill"></i>';
+                playPauseBtn.innerHTML = '<i class="fas fa-play"></i>';
             }
         });
 
-        // When a play button is clicked
         document.querySelectorAll('.play-btn').forEach(button => {
             button.addEventListener('click', function () {
                 currentTrackIndex = this.getAttribute('data-index');
-                loadTrack(currentTrackIndex);
+                loadTrack(currentTrackIndex);  
             });
         });
 
-        // Progress Bar Update
         audioPlayer.addEventListener('timeupdate', function () {
             progressBar.value = (audioPlayer.currentTime / audioPlayer.duration) * 100;
         });
 
-        // Next/Previous Buttons
         document.getElementById('nextBtn').addEventListener('click', function () {
             currentTrackIndex = (parseInt(currentTrackIndex) + 1) % tracks.length;
             loadTrack(currentTrackIndex);
@@ -83,4 +56,80 @@ const tracks = document.querySelectorAll('.song-item');
             loadTrack(currentTrackIndex);
         });
 
-        
+        const addSongBtn = document.getElementById('addSongBtn');
+        const songModal = document.getElementById('songModal');
+        const closeModal = document.querySelector('.close');
+
+        addSongBtn.addEventListener('click', function () {
+            songModal.style.display = 'block';
+        });
+
+        closeModal.addEventListener('click', function () {
+            songModal.style.display = 'none';
+        });
+
+        window.addEventListener('click', function (event) {
+            if (event.target == songModal) {
+                songModal.style.display = 'none';
+            }
+        });
+
+        document.querySelectorAll('.delete-btn').forEach(button => {
+            button.addEventListener('click', function () {
+                const songId = this.getAttribute('data-id');
+
+                const userConfirmed = confirm('Are you sure you want to delete this song?');
+                if (userConfirmed) {
+                    fetch(`/delete-song/${songId}`, {
+                        method: 'DELETE'
+                    })
+                    .then(response => {
+                        if (response.ok) {
+                            this.closest('.song-item').remove();
+                        } else {
+                            alert('Failed to delete the song.');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('An error occurred while trying to delete the song.');
+                    });
+                }
+            });
+        });
+
+const editSongModal = document.getElementById('editSongModal');
+const closeEditModal = document.getElementById('closeEditModal');
+
+document.querySelectorAll('.edit-btn').forEach(button => {
+    button.addEventListener('click', function () {
+
+        const songId = this.getAttribute('data-id');
+        const songTitle = this.getAttribute('data-title');
+        const songArtist = this.getAttribute('data-artist');
+        const songImage = this.getAttribute('data-image');
+        const songFile = this.getAttribute('data-file');
+
+        document.getElementById('editSongId').value = songId;
+        document.getElementById('editTitle').value = songTitle;
+        document.getElementById('editArtist').value = songArtist;
+
+        const previewImage = document.getElementById('editPreviewImage');
+        previewImage.src = songImage;
+
+        document.getElementById('editCoverImage').value = "";
+        document.getElementById('editMusicFile').value = "";
+
+        editSongModal.style.display = 'block';
+    });
+});
+
+closeEditModal.addEventListener('click', function () {
+    editSongModal.style.display = 'none';
+});
+
+window.addEventListener('click', function (event) {
+    if (event.target == editSongModal) {
+        editSongModal.style.display = 'none';
+    }
+});
